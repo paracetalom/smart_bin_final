@@ -196,43 +196,94 @@ transition:max-height 0.4s ease,padding 0.3s ease;
 <div id="infoPage" class="page">
 <div style="padding:30px;max-width:700px;margin:auto;">
 
-<h2 style="margin-bottom:20px;">ข้อมูลพลาสติก</h2>
+<h2 style="margin-bottom:10px;">ข้อมูลพลาสติก</h2>
+<p style="font-size:14px;color:#666;margin-bottom:25px;">
+ระบบ SmartBin สามารถตรวจจับประเภทพลาสติกเพื่อช่วยแยกขยะอย่างถูกต้อง
+</p>
 
+<!-- PET -->
 <div class="dropdown">
 <div class="dropdown-header" onclick="toggleDrop(this)">
 PET (1)
 <span>+</span>
 </div>
 <div class="dropdown-body">
-ใช้ทำขวดน้ำดื่ม ขวดเครื่องดื่ม<br><br>
-รีไซเคิลง่ายที่สุด ควรล้างก่อนทิ้ง
+<b>ชื่อเต็ม:</b> Polyethylene Terephthalate<br>
+<b>ตัวอย่าง:</b> ขวดน้ำดื่ม ขวดน้ำอัดลม<br><br>
+✔ รีไซเคิลง่ายที่สุด<br>
+✔ น้ำหนักเบา<br>
+⚠ ไม่ควรใช้ซ้ำหลายครั้ง<br><br>
+<b>วิธีทิ้ง:</b> ล้างให้สะอาด บีบให้แบนก่อนทิ้ง
 </div>
 </div>
 
+<!-- HDPE -->
 <div class="dropdown">
 <div class="dropdown-header" onclick="toggleDrop(this)">
 HDPE (2)
 <span>+</span>
 </div>
 <div class="dropdown-body">
-ขวดแชมพู แกลลอน ถังน้ำ<br><br>
-แข็งแรง ทนทาน รีไซเคิลได้ดี
+<b>ชื่อเต็ม:</b> High-Density Polyethylene<br>
+<b>ตัวอย่าง:</b> ขวดแชมพู แกลลอน ถังน้ำ<br><br>
+✔ แข็งแรง ทนสารเคมี<br>
+✔ รีไซเคิลได้ดี<br><br>
+<b>วิธีทิ้ง:</b> ล้างคราบของเหลวออกก่อนทิ้ง
 </div>
 </div>
 
+<!-- OTHER -->
 <div class="dropdown">
 <div class="dropdown-header" onclick="toggleDrop(this)">
 Other (7)
 <span>+</span>
 </div>
 <div class="dropdown-body">
-พลาสติกผสม เช่น PC, ABS<br><br>
-รีไซเคิลยาก บางชนิดอาจมีสารอันตราย
+<b>ประเภท:</b> พลาสติกผสม เช่น PC, ABS<br>
+<b>ตัวอย่าง:</b> กล่องอาหารบางชนิด ฝาขวดบางประเภท<br><br>
+❌ รีไซเคิลยาก<br>
+⚠ บางชนิดอาจมีสาร BPA<br><br>
+<b>คำแนะนำ:</b> ตรวจสอบสัญลักษณ์ก่อนทิ้ง
 </div>
+</div>
+
+<!-- SECTION เพิ่มเติม -->
+<div style="
+margin-top:30px;
+background:#f8fafc;
+padding:20px;
+border-radius:15px;
+">
+
+<h3 style="margin-top:0;">ทำไมต้องแยกขยะ?</h3>
+
+<ul style="padding-left:18px;font-size:14px;line-height:1.7;">
+<li>ลดปริมาณขยะฝังกลบ</li>
+<li>ช่วยลดโลกร้อน</li>
+<li>ลดต้นทุนการจัดการขยะ</li>
+<li>เพิ่มมูลค่าให้วัสดุรีไซเคิล</li>
+</ul>
+
+</div>
+
+<!-- FACT BOX -->
+<div style="
+margin-top:20px;
+background:linear-gradient(90deg,#10b981,#2563eb);
+color:white;
+padding:18px;
+border-radius:15px;
+font-size:14px;
+">
+
+<b>เกร็ดความรู้:</b><br>
+ขวด PET 1 ขวด สามารถรีไซเคิลกลับมาเป็นเสื้อผ้าโพลีเอสเตอร์ได้!
+
 </div>
 
 </div>
 </div>
+
 
 <script>
 
@@ -366,3 +417,4 @@ header.querySelector("span").innerText="-";
 </script>
 </body>
 </html>
+
