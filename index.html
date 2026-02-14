@@ -1,171 +1,334 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SmartBin Scanner</title>
+<title>SmartBin</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
 
 <style>
-body{margin:0;font-family:'Kanit',sans-serif;background:#f5f5f5;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
-#camera-wrapper{position:relative;flex:1;background:#000;display:flex;justify-content:center;align-items:center;}
-canvas{width:100%;height:100%;object-fit:cover;}
-.control-btn{position:absolute;top:20px;background:rgba(0,0,0,0.4);color:white;border:none;border-radius:50%;width:45px;height:45px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-#btn-power{left:20px;}
-#btn-switch{right:20px;}
-#status-msg{color:#aaa;position:absolute;}
-#result-panel{background:white;padding:20px 25px;border-radius:20px 20px 0 0;min-height:180px;}
-.result-row{display:flex;align-items:center;margin-bottom:15px;}
-.label-name{width:60px;font-weight:500;}
-.progress-track{flex:1;height:25px;background:#eee;border-radius:6px;overflow:hidden;position:relative;}
-.progress-fill{height:100%;width:0%;background:#4CAF50;transition:0.2s;}
-.percent-text{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;}
+body{
+margin:0;
+font-family:'Kanit',sans-serif;
+background:#eef2f6;
+height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* HEADER */
+.header{
+padding:15px 25px;
+background:white;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+.header h2{margin:0;font-weight:600;}
+.header span{font-size:13px;color:#888;}
+
+/* TABS */
+.tabs{
+display:flex;
+justify-content:center;
+margin:15px;
+}
+.tab{
+padding:10px 25px;
+border-radius:25px;
+background:#e5e7eb;
+margin:0 5px;
+cursor:pointer;
+}
+.tab.active{
+background:linear-gradient(90deg,#10b981,#2563eb);
+color:white;
+}
+
+/* PAGE */
+.page{display:none;flex:1;}
+
+/* CAMERA PAGE */
+.camera-card{
+margin:0 40px;
+background:#0f1c2e;
+border-radius:20px;
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+position:relative;
+overflow:hidden;
+}
+canvas{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.placeholder{
+color:#94a3b8;
+text-align:center;
+}
+
+.switch-btn{
+position:absolute;
+top:15px;
+right:15px;
+background:rgba(255,255,255,0.2);
+border:none;
+border-radius:50%;
+width:40px;
+height:40px;
+color:white;
+cursor:pointer;
+display:none;
+}
+
+.result-panel{
+background:white;
+padding:20px 30px;
+border-radius:20px 20px 0 0;
+}
+
+.result-row{
+margin-bottom:12px;
+}
+
+.progress-track{
+height:18px;
+background:#eee;
+border-radius:8px;
+overflow:hidden;
+position:relative;
+}
+
+.progress-fill{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#10b981,#3b82f6);
+transition:0.2s;
+}
+
+.percent-text{
+position:absolute;
+right:8px;
+top:50%;
+transform:translateY(-50%);
+font-size:12px;
+}
+
+.bottom-btn{
+margin:15px 40px 25px;
+padding:14px;
+border:none;
+border-radius:30px;
+background:linear-gradient(90deg,#10b981,#2563eb);
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.scan-frame{
+position:absolute;
+width:65%;
+height:55%;
+border:2px solid rgba(255,255,255,0.7);
+border-radius:20px;
+pointer-events:none;
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="camera-wrapper">
-<p id="status-msg">ปิดกล้องอยู่</p>
+<div class="header">
+<h2>SmartBin</h2>
+<span>AI Plastic Bottle Detector</span>
+</div>
 
-<button id="btn-power" class="control-btn" onclick="toggleCamera()">
-<span class="material-icons" id="icon-power">videocam_off</span>
-</button>
+<div class="tabs">
+<div class="tab active" onclick="showCamera()">📷 กล้องตรวจจับ</div>
+<div class="tab" onclick="showInfo()">ℹ️ ข้อมูลพลาสติก</div>
+</div>
 
-<button id="btn-switch" class="control-btn" onclick="switchCamera()">
+<!-- CAMERA PAGE -->
+<div id="cameraPage" class="page" style="display:flex;flex-direction:column;">
+
+<div class="camera-card">
+<div class="placeholder" id="placeholder">
+<span class="material-icons" style="font-size:60px;">no_photography</span>
+<p>กล้องยังไม่เปิด</p>
+</div>
+
+<button class="switch-btn" id="switchBtn" onclick="switchCamera()">
 <span class="material-icons">flip_camera_ios</span>
 </button>
 
 <div id="webcam-container"></div>
+<div class="scan-frame"></div>
+
 </div>
 
-<div id="result-panel">
-<div class="result-row">
-<div class="label-name">PET</div>
-<div class="progress-track">
-<span class="percent-text" id="text-PET">0%</span>
-<div class="progress-fill" id="bar-PET"></div>
-</div>
+<div class="result-panel" id="result-panel"></div>
+
+<button class="bottom-btn" onclick="toggleCamera()">เปิด / ปิด กล้อง</button>
 </div>
 
-<div class="result-row">
-<div class="label-name">HDPE</div>
-<div class="progress-track">
-<span class="percent-text" id="text-HDPE">0%</span>
-<div class="progress-fill" id="bar-HDPE"></div>
-</div>
+
+<!-- INFO PAGE -->
+<div id="infoPage" class="page">
+<div style="padding:40px;">
+<h3>PET</h3>
+<p>ขวดน้ำดื่ม รีไซเคิลง่าย</p>
+
+<h3>HDPE</h3>
+<p>ขวดแชมพู แข็งแรง ทนทาน</p>
+
+<h3>Other</h3>
+<p>พลาสติกประเภทอื่น รีไซเคิลยาก</p>
 </div>
 </div>
 
 <script>
+
 const URL="https://teachablemachine.withgoogle.com/models/EV-mbCqpx/";
 
-let model,webcam,maxPredictions;
+let model, webcam, maxPredictions;
 let isCameraOn=false;
-let currentFacingMode="environment"; // เริ่มกล้องหลัง
+let currentFacingMode="environment";
 let loopId=null;
 
+/* โหลดโมเดล */
 async function loadModel(){
-    model=await tmImage.load(URL+"model.json",URL+"metadata.json");
-    maxPredictions=model.getTotalClasses();
-    document.getElementById("status-msg").innerText="พร้อมใช้งาน";
+model=await tmImage.load(URL+"model.json",URL+"metadata.json");
+maxPredictions=model.getTotalClasses();
+createBars();
 }
 loadModel();
 
-async function toggleCamera(){
-    const icon=document.getElementById("icon-power");
-    const status=document.getElementById("status-msg");
+/* สร้าง progress bars ตาม label จริง */
+function createBars(){
+const panel=document.getElementById("result-panel");
+panel.innerHTML="";
 
-    if(isCameraOn){
-        await stopLoop();
-        if(webcam) await webcam.stop();
-        webcam=null;
-        document.getElementById("webcam-container").innerHTML="";
-        isCameraOn=false;
-        icon.innerText="videocam_off";
-        status.innerText="กล้องถูกปิด";
-        status.style.display="block";
-        resetBars();
-    }else{
-        await initWebcam();
-        isCameraOn=true;
-        icon.innerText="videocam";
-        status.style.display="none";
-    }
+model.getClassLabels().forEach(label=>{
+const safeId=label.replace(/\s+/g,'');
+panel.innerHTML+=`
+<div class="result-row">
+<div>${label}</div>
+<div class="progress-track">
+<span class="percent-text" id="text-${safeId}">0%</span>
+<div class="progress-fill" id="bar-${safeId}"></div>
+</div>
+</div>
+`;
+});
 }
 
-async function switchCamera(){
-    if(!isCameraOn) return;
-    currentFacingMode=currentFacingMode==="environment"?"user":"environment";
-    await stopLoop();
-    if(webcam) await webcam.stop();
-    webcam=null;
-    document.getElementById("webcam-container").innerHTML="";
-    await initWebcam();
+/* Tabs */
+function showCamera(){
+document.getElementById("cameraPage").style.display="flex";
+document.getElementById("infoPage").style.display="none";
+setActiveTab(0);
+}
+
+function showInfo(){
+document.getElementById("cameraPage").style.display="none";
+document.getElementById("infoPage").style.display="block";
+setActiveTab(1);
+
+if(isCameraOn){
+stopCamera();
+}
+}
+
+function setActiveTab(index){
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.querySelectorAll(".tab")[index].classList.add("active");
+}
+
+/* กล้อง */
+async function toggleCamera(){
+if(isCameraOn){
+stopCamera();
+}else{
+initWebcam();
+}
 }
 
 async function initWebcam(){
-    try{
-        webcam=new tmImage.Webcam(400,400,false);
-        await webcam.setup({facingMode:{exact:currentFacingMode}});
-        await webcam.play();
+webcam=new tmImage.Webcam(400,400,false);
+await webcam.setup({facingMode:currentFacingMode});
+await webcam.play();
 
-        const canvas=webcam.canvas;
+document.getElementById("placeholder").style.display="none";
+document.getElementById("switchBtn").style.display="block";
+document.getElementById("webcam-container").appendChild(webcam.canvas);
 
-        // ⭐ แก้ mirror กล้องหน้า
-        if(currentFacingMode==="user"){
-            canvas.style.transform="scaleX(-1)";
-        }else{
-            canvas.style.transform="scaleX(1)";
-        }
+isCameraOn=true;
+loopId=requestAnimationFrame(loop);
+}
 
-        document.getElementById("webcam-container").appendChild(canvas);
-        loopId=requestAnimationFrame(loop);
-    }catch(err){
-        console.error(err);
-        document.getElementById("status-msg").innerText="เปิดกล้องไม่ได้";
-    }
+async function stopCamera(){
+await stopLoop();
+if(webcam) await webcam.stop();
+document.getElementById("webcam-container").innerHTML="";
+document.getElementById("placeholder").style.display="block";
+document.getElementById("switchBtn").style.display="none";
+resetBars();
+isCameraOn=false;
+}
+
+async function switchCamera(){
+currentFacingMode=currentFacingMode==="environment"?"user":"environment";
+if(isCameraOn){
+await stopCamera();
+initWebcam();
+}
 }
 
 async function loop(){
-    if(webcam&&isCameraOn){
-        webcam.update();
-        await predict();
-        loopId=requestAnimationFrame(loop);
-    }
+if(webcam&&isCameraOn){
+webcam.update();
+await predict();
+loopId=requestAnimationFrame(loop);
+}
 }
 
 async function predict(){
-    const prediction=await model.predict(webcam.canvas);
-    for(let i=0;i<prediction.length;i++){
-        const name=prediction[i].className;
-        const percent=Math.round(prediction[i].probability*100);
-        updateBar(name,percent);
-    }
+const prediction=await model.predict(webcam.canvas);
+
+prediction.forEach(p=>{
+const percent=Math.round(p.probability*100);
+updateBar(p.className,percent);
+});
 }
 
 function updateBar(label,percent){
-    const bar=document.getElementById("bar-"+label);
-    const text=document.getElementById("text-"+label);
-    if(bar){
-        bar.style.width=percent+"%";
-        text.innerText=percent+"%";
-    }
+const safeId=label.replace(/\s+/g,'');
+const bar=document.getElementById("bar-"+safeId);
+const text=document.getElementById("text-"+safeId);
+
+if(bar){
+bar.style.width=percent+"%";
+text.innerText=percent+"%";
+}
 }
 
 function resetBars(){
-    document.querySelectorAll(".progress-fill").forEach(e=>e.style.width="0%");
-    document.querySelectorAll(".percent-text").forEach(e=>e.innerText="0%");
+document.querySelectorAll(".progress-fill").forEach(e=>e.style.width="0%");
+document.querySelectorAll(".percent-text").forEach(e=>e.innerText="0%");
 }
 
 async function stopLoop(){
-    if(loopId) cancelAnimationFrame(loopId);
+if(loopId) cancelAnimationFrame(loopId);
 }
+
 </script>
 
 </body>
